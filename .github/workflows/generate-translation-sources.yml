@@ -1,0 +1,38 @@
+name: Generate translation sources
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          python -m pip install --upgrade pip
+          python -m pip install pymupdf requests beautifulsoup4
+
+      - name: Generate source TSV files
+        run: python scripts/generate_translation_sources.py
+
+      - name: Commit generated files
+        run: |
+          git config user.name "translation-workflow"
+          git config user.email "translation-workflow@users.noreply.github.com"
+          git add generated
+          git commit -m "Generate translation source files" || exit 0
+          git push
