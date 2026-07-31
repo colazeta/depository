@@ -2,6 +2,10 @@ name: Generate translation sources
 
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/generate-translation-sources.yml'
+      - 'scripts/generate_translation_sources.py'
 
 permissions:
   contents: write
